@@ -1,0 +1,267 @@
+.app {
+    min-height: 100vh;
+    background-color: #f9fafb;
+  }
+  
+  .navbar {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .logo span {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .icon.rotate {
+    transform: rotate(180deg);
+  }
+  
+  .main-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+  
+  .header {
+    margin-bottom: 24px;
+  }
+  
+  .header h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  
+  .header p {
+    color: #4b5563;
+  }
+  
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  
+  .course-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  
+  .course-card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .course-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .course-description {
+    color: #4b5563;
+    margin-bottom: 16px;
+  }
+  
+  .progress-container {
+    margin-top: 8px;
+  }
+  
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+  }
+  
+  .progress-bar {
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    height: 8px;
+    overflow: hidden;
+  }
+  
+  .progress-bar.large {
+    height: 12px;
+  }
+  
+  .progress-fill {
+    background-color: #2563eb;
+    height: 100%;
+    transition: width 0.3s;
+  }
+  
+  .course-detail {
+    max-width: 768px;
+    margin: 0 auto;
+  }
+  
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #2563eb;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    margin-bottom: 24px;
+  }
+  
+  .back-button:hover {
+    color: #1d4ed8;
+  }
+  
+  .course-header {
+    margin-bottom: 24px;
+  }
+  
+  .course-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  
+  .lessons-section {
+    margin-top: 24px;
+  }
+  
+  .lessons-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  
+  .lesson {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .lesson.locked {
+    opacity: 0.6;
+  }
+  
+  .lesson-header {
+    width: 100%;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .lesson-header:hover:not(:disabled) {
+    background-color: #f9fafb;
+  }
+  
+  .lesson-header:disabled {
+    cursor: not-allowed;
+  }
+  
+  .lesson-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .icon.completed {
+    color: #10b981;
+  }
+  
+  .icon.locked {
+    color: #9ca3af;
+  }
+  
+  .icon.uncompleted {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+  }
+  
+  .lesson-content {
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .lesson-content h4 {
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  
+  .lesson-content p {
+    color: #4b5563;
+    margin-bottom: 16px;
+  }
+  
+  .objectives {
+    background-color: #f9fafb;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .objectives h5 {
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  
+  .objectives ul {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+  
+  .objectives li {
+    margin: 4px 0;
+  }
+  
+  .start-button {
+    background-color: #2563eb;
+    color: white;
+    padding: 8px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .start-button:hover {
+    background-color: #1d4ed8;
+  }
+  
+  @media (max-width: 768px) {
+    .course-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .main-content {
+      padding: 16px;
+    }
+  }
