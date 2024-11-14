@@ -13,13 +13,41 @@ export const lesson1 = {
         title: 'Meet Our Poets',
         content: `Let's begin by getting to know our two featured poets:
 
-        Langston Hughes was an influential and leading figure in the Harlem Renaissance, a cultural and artistic movement in the 1920s that celebrated African American cultural expression in literature, music, and the arts. His poetry is celebrated for its vibrant, jazz-inspired rhythms and vivid depictions of Black life in America. Hughes used language that was simple and accessible yet deeply expressive, reflecting the everyday struggles and joys of African Americans.
+        Langston Hughes was an influential and leading figure in the Harlem Renaissance, a cultural and artistic movement
+        in the 1920s that celebrated African American cultural expression in literature, music, and the arts. His poetry is
+        celebrated for its vibrant, jazz-inspired rhythms and vivid depictions of Black life in America. Hughes used language 
+        that was simple and accessible yet deeply expressive, reflecting the everyday struggles and joys of African Americans.
+        Hughes was not afraid to address issues of racial inequality and social justice in his work, making his poetry both a 
+        celebration and a critique of society. His poems like "The Negro Speaks of Rivers" and "Harlem" (often referred to as 
+        "A Dream Deferred") carry powerful messages of resilience, identity, and hope. Through metaphor and symbolism, Hughes 
+        depicted the African American experience with pride, and he believed that Black art should be reflective of the struggles
+        and triumphs within Black communities. Jazz music significantly influenced Hughes' poetic style. Known as 
+        "jazz poetry," his writing embraced the syncopation, improvisation, and rhythmic energy of jazz music, mirroring the 
+        richness of African American oral traditions. In his work, Hughes created a distinct voice that sought to honor the 
+        lives of the working-class Black community, whose stories were often overlooked. His characters, drawn from real life,
+        spoke with authenticity about dreams, hardships, and hope. Hughes' writing not only enriched American literature but
+        also encouraged younger generations to express their identity and experiences without fear. His influence extended
+        beyond poetry into other art forms and left an indelible impact on American culture, where he is remembered as a poet
+        who captured the essence of his time while challenging America to become a more inclusive and just society.
 
-Hughes was not afraid to address issues of racial inequality and social justice in his work, making his poetry both a celebration and a critique of society. His poems like "The Negro Speaks of Rivers" and "Harlem" (often referred to as "A Dream Deferred") carry powerful messages of resilience, identity, and hope. Through metaphor and symbolism, Hughes depicted the African American experience with pride, and he believed that Black art should be reflective of the struggles and triumphs within Black communities.
-
-Jazz music significantly influenced Hughes' poetic style. Known as "jazz poetry," his writing embraced the syncopation, improvisation, and rhythmic energy of jazz music, mirroring the richness of African American oral traditions. In his work, Hughes created a distinct voice that sought to honor the lives of the working-class Black community, whose stories were often overlooked. His characters, drawn from real life, spoke with authenticity about dreams, hardships, and hope.
-
-Hughes' writing not only enriched American literature but also encouraged younger generations to express their identity and experiences without fear. His influence extended beyond poetry into other art forms and left an indelible impact on American culture, where he is remembered as a poet who captured the essence of his time while challenging America to become a more inclusive and just society.`,
+        Sylvia Plath was a pioneering and influential figure in confessional poetry, a genre characterized by its intense and
+        personal exploration of the self. Her writing, filled with raw emotion and introspection, often delved into themes of
+        identity, mental health, nature, and the complex relationships between individuals and society. Her voice remains distinct
+        for its striking imagery, honesty, and the haunting beauty of her language. Plath's work reflects her own struggles with mental
+        health, particularly in her poems in Ariel, a collection published posthumously that solidified her status as a defining voice
+        of her generation. Poems like "Lady Lazarus" and "Daddy" reveal Plath's ability to transform her personal experiences of despair,
+        anger, and resilience into universal expressions of the human condition. In these works, she used bold metaphors and stark, 
+        sometimes violent imagery to communicate complex emotions, giving readers insight into the depths of her psyche. 
+        Nature also appears frequently in Plath's poetry, often symbolizing the internal landscapes of her mind. Her work is filled
+        with references to the moon, stars, and the changing seasons, which serve as metaphors for life cycles, renewal, and decay.
+        These natural elements bring a surreal quality to her poetry, which simultaneously draws readers closer to her perspective 
+        while creating an almost mythic dimension to her personal experiences. Plath's legacy extends beyond her poetic achievements;
+        she opened doors for writers, especially women, to discuss topics that were once considered taboo. She broke new ground in
+        exploring subjects like mental illness, marriage, and the role of women in society with an honesty and intensity that many
+        readers found revolutionary. Her poetry is celebrated not only for its technical brilliance and daring imagery but also for
+        its unflinching exploration of pain, identity, and the search for meaning.
+        
+        `,
         images: [
           {
             src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Langston_Hughes_by_Carl_Van_Vechten_1936.jpg/800px-Langston_Hughes_by_Carl_Van_Vechten_1936.jpg',
