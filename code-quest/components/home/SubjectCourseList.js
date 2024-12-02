@@ -14,10 +14,23 @@ export default function SubjectCourseList({ subject }) {
       setCourses(courseList);
     }
   }, [groupedBySubject]);
+
+  const subjectColor = theme.colors[subject] || theme.colors.textBlack;
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.text, styles.subjectText]}>{subject}</Text>
+        <Text
+          style={[
+            styles.text,
+            {
+              fontWeight: "bold",
+              color: subjectColor,
+            },
+          ]}
+        >
+          {subject}
+        </Text>
         <Text style={styles.text}> Courses</Text>
       </View>
       <FlatList
@@ -42,6 +55,5 @@ const styles = StyleSheet.create({
   },
   subjectText: {
     fontWeight: "bold",
-    color: theme.colors.english,
   },
 });

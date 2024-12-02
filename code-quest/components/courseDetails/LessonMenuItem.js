@@ -13,37 +13,38 @@ import { CoursesContext } from "../../context/CoursesContext";
 import { UserContext } from "../../context/UserContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
-export default function LessonMenuItem({ moduleName }) {
-  const { selectedCourse } = useContext(CoursesContext);
-  const userData = useContext(UserContext);
+export default function LessonMenuItem({ moduleName, tab }) {
+  const { selectedCourse, enrolledSelectedCourse } = useContext(CoursesContext);
+  const { userData } = useContext(UserContext);
   const router = useRouter();
 
   let icon = <></>;
   if (
-    userData["courses"] != null &&
-    courseString["course_name"] in Object.keys(userData["courses"])
+    enrolledSelectedCourse &&
+    userData["courses"][selectedCourse["course_name"]] != null &&
+    userData["courses"][selectedCourse["course_name"]].includes(moduleName)
   ) {
-    if (moduleName in Object.keys(userData[selectedCourse["course_name"]])) {
-      icon = (
-        <View
-          style={{
-            ...styles.iconContainer,
-            backgroundColor: theme.colors.lightGreen,
-          }}
-        >
-          <FontAwesome6
-            name="check"
-            size={Dimensions.get("window").height * 0.05}
-            color={theme.colors.green}
-          />
-        </View>
-      );
-    }
+    icon = (
+      <View
+        style={{
+          ...styles.iconContainer,
+          backgroundColor: theme.colors.lightGreen,
+        }}
+      >
+        <FontAwesome6
+          name="check"
+          size={Dimensions.get("window").height * 0.05}
+          color={theme.colors.green}
+        />
+      </View>
+    );
   } else if (selectedCourse["modules"][moduleName] === "WRITE") {
     icon = (
-      <View style={{ ...styles.iconContainer, backgroundColor: "gray" }}>
+      <View
+        style={{ ...styles.iconContainer, backgroundColor: theme.colors.gray }}
+      >
         <EvilIcons
           name="pencil"
           size={Dimensions.get("window").height * 0.05}
@@ -65,25 +66,37 @@ export default function LessonMenuItem({ moduleName }) {
     );
   }
 
-  const disabled = !(
-    userData["courses"] != null &&
-    courseString["course_name"] in Object.keys(userData["courses"])
-  );
-
   return (
-    <View style={styles.container}>
-      {icon}
-      <View>
-        <Text style={styles.titleText}>{moduleName}</Text>
+    <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: `/tabs/${tab}/moduleContent`,
+          params: {
+            moduleName: moduleName,
+            tab: tab,
+          },
+        })
+      }
+      disabled={!enrolledSelectedCourse}
+    >
+      <View style={styles.container}>
+        {icon}
+        <View>
+          <Text style={styles.titleText}>{moduleName}</Text>
+        </View>
+        <View style={styles.arrowContainer}>
+          <Entypo
+            name="chevron-right"
+            size={24}
+            color={
+              !enrolledSelectedCourse
+                ? theme.colors.gray
+                : theme.colors.darkBlue
+            }
+          />
+        </View>
       </View>
-      <View>
-        <Entypo
-          name="chevron-right"
-          size={24}
-          color={disabled ? theme.colors.gray : theme.colors.darkBlue}
-        />
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

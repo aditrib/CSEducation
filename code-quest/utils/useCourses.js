@@ -5,6 +5,7 @@ export default function useCourses() {
   const [courses, setCourses] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState();
+  const [enrolledSelectedCourse, setEnrolledSelectedCourse] = useState();
 
   const fetchCourses = async () => {
     setIsLoading(true);
@@ -34,10 +35,16 @@ export default function useCourses() {
 
           return acc;
         }, {});
+        const coursesByName = courseData.reduce((acc, course) => {
+          acc[course.course_name] = course;
+          return acc;
+        }, {});
+
         setCourses({
           courses: courseData,
           subjects: uniqueSubjects,
           groupedBySubject: groupedBySubject,
+          coursesByName: coursesByName,
         });
       } catch (err) {
         console.error(err);
@@ -55,5 +62,7 @@ export default function useCourses() {
     isLoading: isLoading,
     selectedCourse: selectedCourse,
     setSelectedCourse: setSelectedCourse,
+    enrolledSelectedCourse: enrolledSelectedCourse,
+    setEnrolledSelectedCourse: setEnrolledSelectedCourse,
   };
 }

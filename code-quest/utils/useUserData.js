@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useSession from "./useSession";
 import db from "../database/db";
 
@@ -19,8 +19,9 @@ export default function useUserData() {
             .select()
             .eq("email", session.user.email);
           const { data: user } = await userQuery;
-
-          setUserData(user ? user[0] : null);
+          if (user) {
+            setUserData(user[0]);
+          }
         } catch (err) {
           console.error(err);
         }
@@ -33,5 +34,8 @@ export default function useUserData() {
     fetchPosts();
   }, [session]);
 
-  return userData;
+  return {
+    userData,
+    setUserData,
+  };
 }

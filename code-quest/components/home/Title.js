@@ -4,7 +4,7 @@ import { UserContext } from "../../context/UserContext";
 import theme from "../../assets/theme";
 
 export default function Title() {
-  const userData = useContext(UserContext);
+  const { userData } = useContext(UserContext);
   return (
     <View style={styles.titleContainer}>
       <Text style={styles.subtitleText}>Welcome,</Text>

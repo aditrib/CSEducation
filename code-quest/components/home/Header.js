@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { UserContext } from "../../context/UserContext";
 
 export default function Header() {
-  const userData = useContext(UserContext);
+  const { userData } = useContext(UserContext);
   if (userData) {
     return (
       <View style={styles.header}>

@@ -1,16 +1,15 @@
 import { View, Image, StyleSheet, Dimensions } from "react-native";
 import React, { useEffect, useState } from "react";
-import db from "../../database/db";
 import useImage from "../../utils/useImage";
 
-export default function Banner() {
-  const { imageUri: testImageUri } = useImage({ path: "banner.png" });
+export default function Logo() {
+  const { imageUri } = useImage({ path: "logo.png" });
 
   return (
     <View style={{ alignItems: "center" }}>
       <Image
         source={{
-          uri: testImageUri,
+          uri: imageUri,
         }}
         style={styles.banner}
       />

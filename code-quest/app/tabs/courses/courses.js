@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import React from "react";
+import Title from "../../../components/courses/Title";
+import MyCourseList from "../../../components/courses/MyCourseList";
 
-export default function courses() {
+export default function Courses() {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={{ fontFamily: "Roboto-Bold" }}>courses</Text>
-      <Text style={{ fontFamily: "Roboto-Medium" }}>hi</Text>
+      <Title />
+      <MyCourseList />
     </SafeAreaView>
   );
 }
@@ -13,8 +15,6 @@ export default function courses() {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    borderWidth: 10,
-    borderColor: "red",
     flex: 1,
   },
 });

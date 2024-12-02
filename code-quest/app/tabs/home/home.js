@@ -6,8 +6,8 @@ import Title from "../../../components/home/Title";
 import Banner from "../../../components/home/Banner";
 import CourseCatalog from "../../../components/home/CourseCatalog";
 
-export default function home() {
-  const userData = useContext(UserContext);
+export default function Home() {
+  const { userData } = useContext(UserContext);
   if (userData) {
     return (
       <SafeAreaView style={styles.container}>
@@ -24,8 +24,6 @@ export default function home() {
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 4,
-    borderColor: "red",
     display: "flex",
     flex: 1,
   },

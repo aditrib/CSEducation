@@ -1,4 +1,10 @@
-import { Text, StyleSheet, ScrollView } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView, useSafeAreaFrame } from "react-native-safe-area-context";
@@ -9,20 +15,26 @@ import CourseBanner from "../../../components/courseDetails/CourseBanner";
 import CourseDescription from "../../../components/courseDetails/CourseDescription";
 import CourseLessons from "../../../components/courseDetails/CourseLessons";
 import { CoursesContext } from "../../../context/CoursesContext";
+import EnrollButton from "../../../components/courseDetails/EnrollButton";
 
-export default function courseDetails() {
-  const { course: courseString } = useLocalSearchParams();
-  const { selectedCourse, setSelectedCourse } = useContext(CoursesContext);
-  const userData = useContext(UserContext);
-  console.log(
-    userData["courses"] != null &&
-      courseString["course_name"] in Object.keys(userData["courses"])
-  );
+export default function CourseDetails() {
+  const { course: courseString, tab } = useLocalSearchParams();
+  const { selectedCourse, setSelectedCourse, setEnrolledSelectedCourse } =
+    useContext(CoursesContext);
+  const { userData } = useContext(UserContext);
 
   useEffect(() => {
     if (courseString) {
       const parsedCourse = JSON.parse(courseString);
       setSelectedCourse(parsedCourse);
+      if (
+        userData["courses"] != null &&
+        parsedCourse["course_name"] in userData["courses"]
+      ) {
+        setEnrolledSelectedCourse(true);
+      } else {
+        setEnrolledSelectedCourse(false);
+      }
     }
   }, [courseString]);
 
@@ -31,11 +43,14 @@ export default function courseDetails() {
       <SafeAreaView style={styles.container}>
         <BackButton />
         <Text style={styles.titleText}>{selectedCourse["course_name"]}</Text>
-        <ScrollView>
-          <CourseBanner />
-          <CourseDescription />
-          <CourseLessons />
-        </ScrollView>
+        <View style={{ paddingBottom: "13%" }}>
+          <ScrollView>
+            <CourseBanner />
+            <CourseDescription />
+            <CourseLessons tab={tab} />
+            <EnrollButton />
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   } else {
@@ -45,8 +60,6 @@ export default function courseDetails() {
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 4,
-    borderColor: "red",
     display: "flex",
     flex: 1,
   },

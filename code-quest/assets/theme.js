@@ -27,10 +27,10 @@ export default {
     lightGreen: "#cae3d3",
     green: "#57ad76",
 
-    english: "#8f1f1f",
-    math: "#495ECA",
-    science: "#81b080",
-    history: "#c4743b",
+    English: "#8f1f1f",
+    Math: "#495ECA",
+    Science: "#81b080",
+    History: "#c4743b",
   },
   sizes: {
     iconSmall: 16,

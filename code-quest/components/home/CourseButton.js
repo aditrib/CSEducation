@@ -22,6 +22,7 @@ export default function CourseButton({ course }) {
         pathname: `/tabs/home/courseDetails`,
         params: {
           course: JSON.stringify(course),
+          tab: "home",
         },
       }}
     >
