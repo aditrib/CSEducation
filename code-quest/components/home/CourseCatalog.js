@@ -11,10 +11,9 @@ export default function CourseCatalog() {
   if (subjects) {
     return (
       <View>
-        <FlatList
-          data={subjects}
-          renderItem={({ item }) => <SubjectCourseList subject={item} />}
-        />
+        {["All", ...subjects].map((value) => {
+          return <SubjectCourseList key={value} subject={value} />;
+        })}
       </View>
     );
   } else {

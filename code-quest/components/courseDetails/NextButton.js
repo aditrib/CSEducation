@@ -22,6 +22,7 @@ export default function NextButton({ currentModuleName, nextModuleName, tab }) {
             pathname: `/tabs/${tab}/moduleContent`,
             params: {
               moduleName: nextModuleName,
+              tab: tab,
             },
           });
         }}

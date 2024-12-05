@@ -10,46 +10,27 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router"; // Navigation
 import db from "../../database/db";
+import theme from "../../assets/theme";
+import LoginIcon from "./LoginIcon";
+import Logo from "./Logo";
+import useCreateAccount from "../../utils/useCreateAccount";
+import { ToggleButton } from "react-native-paper";
+import AccountTypeButton from "./AccountTypeButton";
 
 export default function CreateAccount() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [accountType, setAccountType] = useState("");
+  const { createAccount, loading } = useCreateAccount();
   const router = useRouter();
-
-  const createAccount = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await db.auth.signUp({
-        email: email,
-        password: password,
-      });
-      await db.from("users").insert({
-        name: name,
-        email: email,
-      });
-
-      if (error) {
-        Alert.alert("Error", error.message);
-      } else {
-        Alert.alert("Success", "Account created!");
-        router.push("/tabs/home"); // Navigate to home after successful registration
-      }
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Error", "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const isCreateDisabled =
     loading || name.length === 0 || email.length === 0 || password.length === 0;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+      <Logo />
       <TextInput
         onChangeText={(text) => setName(text)}
         value={name}
@@ -70,15 +51,43 @@ export default function CreateAccount() {
         style={styles.input}
         secureTextEntry
       />
-      <TouchableOpacity
-        onPress={createAccount}
-        disabled={isCreateDisabled}
-        style={[styles.button, isCreateDisabled && styles.disabledButton]}
+      <View style={{ alignItems: "center" }}>
+        <AccountTypeButton
+          accountType={accountType}
+          setAccountType={setAccountType}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={() => createAccount({ name, email, password, accountType })}
+          disabled={isCreateDisabled}
+          style={[styles.button, isCreateDisabled && styles.disabledButton]}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "Creating Account..." : "Create Account"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={() => router.push("/")} // Navigate to CreateAccount
+          style={[styles.button, { backgroundColor: theme.colors.lightBlue }]}
+        >
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
       >
-        <Text style={styles.buttonText}>
-          {loading ? "Creating Account..." : "Create Account"}
-        </Text>
-      </TouchableOpacity>
+        <LoginIcon />
+      </View>
     </View>
   );
 }
@@ -86,34 +95,43 @@ export default function CreateAccount() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    paddingTop: 120,
     padding: 20,
     backgroundColor: "#D7ECFF",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
+    color: theme.colors.darkBlue,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    marginVertical: 8,
+    color: theme.colors.textBlack,
+    backgroundColor: theme.colors.backgroundSecondary,
+    width: "100%",
+    padding: 16,
+    marginTop: 5,
   },
   button: {
-    backgroundColor: "#0056D2",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: theme.colors.darkBlue,
+    height: Dimensions.get("window").height * 0.06,
+    width: Dimensions.get("window").width * 0.75,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 20,
+    justifyContent: "center",
   },
   disabledButton: {
     backgroundColor: "#ccc",
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: theme.colors.textWhite,
+    fontSize: 18,
+    fontWeight: 18,
+    padding: 8,
+  },
+  buttonContainer: {
+    marginTop: 12,
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
 });

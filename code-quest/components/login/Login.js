@@ -10,39 +10,20 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import db from "./../database/db";
+import db from "../../database/db";
 
-import Theme from "./../assets/theme";
-import Logo from "./login/Logo";
-import theme from "./../assets/theme";
-import LoginIcon from "./login/LoginIcon";
+import Theme from "../../assets/theme";
+import Logo from "./Logo";
+import theme from "../../assets/theme";
+import LoginIcon from "./LoginIcon";
 import { useRouter } from "expo-router";
+import useSignIn from "../../utils/useSignIn";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { signInWithEmail, loading } = useSignIn();
   const router = useRouter();
-
-  const signInWithEmail = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await db.auth.signInWithPassword({
-        email: email,
-        password: password,
-        options: {
-          shouldCreateUser: false,
-        },
-      });
-
-      if (error) {
-        Alert.alert(error.message);
-      }
-      setLoading(false);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const isSignInDisabled =
     loading || email.length === 0 || password.length === 0;
@@ -70,7 +51,7 @@ export default function Login() {
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => signInWithEmail()}
+          onPress={() => signInWithEmail({ email, password })}
           disabled={isSignInDisabled}
           style={styles.button}
         >

@@ -9,9 +9,18 @@ export default function useImage({ path }) {
     setLoading(true);
     const fetchImageUri = async () => {
       try {
-        const { data } = db.storage.from("images").getPublicUrl(path);
-        if (data) {
-          setImageUri(data["publicUrl"]);
+        if (!path) {
+          const { data } = db.storage
+            .from("images")
+            .getPublicUrl("default-profile.png");
+          if (data) {
+            setImageUri(data["publicUrl"]);
+          }
+        } else {
+          const { data } = db.storage.from("images").getPublicUrl(path);
+          if (data) {
+            setImageUri(data["publicUrl"]);
+          }
         }
       } catch (error) {
         console.error("Error fetchig image URI:", error);

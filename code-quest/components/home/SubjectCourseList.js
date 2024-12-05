@@ -5,13 +5,15 @@ import theme from "../../assets/theme";
 import CourseButton from "./CourseButton";
 
 export default function SubjectCourseList({ subject }) {
-  const { groupedBySubject } = useContext(CoursesContext);
+  const { groupedBySubject, courses: allCourses } = useContext(CoursesContext);
   const [courses, setCourses] = useState();
 
   useEffect(() => {
     if (subject in groupedBySubject) {
       const courseList = groupedBySubject[subject];
       setCourses(courseList);
+    } else {
+      setCourses(allCourses);
     }
   }, [groupedBySubject]);
 
@@ -36,6 +38,7 @@ export default function SubjectCourseList({ subject }) {
       <FlatList
         data={courses}
         horizontal={true}
+        ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
         renderItem={({ item }) => <CourseButton course={item} />}
       />
     </View>
@@ -45,10 +48,13 @@ export default function SubjectCourseList({ subject }) {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   titleContainer: {
     display: "flex",
     flexDirection: "row",
+    marginBottom: 5,
   },
   text: {
     fontSize: 18,

@@ -43,8 +43,6 @@ const styles = StyleSheet.create({
   container: {
     height: Dimensions.get("window").height * 0.15,
     width: Dimensions.get("window").width * 0.5,
-    marginTop: 10,
-    marginRight: 10,
     backgroundColor: theme.colors.backgroundSecondary,
     borderRadius: 10,
   },

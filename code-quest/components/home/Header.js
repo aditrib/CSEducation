@@ -1,16 +1,27 @@
 import { View, Image, StyleSheet, Dimensions } from "react-native";
 import React, { useContext } from "react";
 import { UserContext } from "../../context/UserContext";
+import useImage from "../../utils/useImage";
+import { Link } from "expo-router";
 
 export default function Header() {
   const { userData } = useContext(UserContext);
+  const { imageUri } = useImage({ path: userData["profile_image"] });
   if (userData) {
     return (
       <View style={styles.header}>
-        <Image
-          source={require("./../../assets/images/default-profile.png")}
-          style={styles.profileImage}
-        />
+        <Link
+          href={{
+            pathname: `/tabs/profile`,
+          }}
+        >
+          <Image
+            source={{
+              uri: imageUri,
+            }}
+            style={styles.profileImage}
+          />
+        </Link>
       </View>
     );
   } else {

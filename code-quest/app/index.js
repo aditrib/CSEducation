@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 
 import { Redirect } from "expo-router";
 
-import Login from "./../components/Login";
 import db from "./../database/db";
 import Loading from "./../components/Loading";
 import { PaperProvider } from "react-native-paper";
 import useUserData from "../utils/useUserData";
 import { UserContext } from "../context/UserContext";
+import Login from "../components/login/Login";
 
 export default function App() {
   const [session, setSession] = useState(null);
