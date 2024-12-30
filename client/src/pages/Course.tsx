@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { ModuleSidebar } from "@/components/ModuleSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PlayCircle } from "lucide-react";
 
 export default function Course() {
   const { id } = useParams<{ id: string }>();
-  
+  const [, setLocation] = useLocation();
+
   const { data: course } = useQuery({
     queryKey: [`/api/courses/${id}`],
   });
@@ -22,10 +24,10 @@ export default function Course() {
         currentModuleId={course.modules[0]?.id}
         progress={{}}
         onSelectModule={(moduleId) => {
-          window.location.href = `/module/${moduleId}`;
+          setLocation(`/module/${moduleId}`);
         }}
       />
-      
+
       <div className="flex-1 p-8">
         <Card>
           <CardHeader>
@@ -33,11 +35,26 @@ export default function Course() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-6">{course.description}</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">Modules:</span>
-                <span>{course.modules.length}</span>
-              </div>
+            <div className="grid grid-cols-1 gap-4">
+              {course.modules.map((module) => (
+                <Card key={module.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{module.title}</CardTitle>
+                      <Button
+                        onClick={() => setLocation(`/module/${module.id}`)}
+                        className="flex items-center gap-2"
+                      >
+                        <PlayCircle className="w-4 h-4" />
+                        Start Module
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">{module.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </CardContent>
         </Card>
