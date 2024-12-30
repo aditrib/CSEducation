@@ -170,7 +170,7 @@ export default function Module() {
                         {item.title.includes('Python') && (
                           <div className="mt-8">
                             <CodeEditor
-                              initialCode="# Write your code here"
+                              initialCode="# Write a program that prints 'Hello World'\n# Hint: Use the print() function"
                               testCases={[
                                 {
                                   input: "",
