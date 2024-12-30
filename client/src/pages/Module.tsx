@@ -4,7 +4,7 @@ import { VideoPlayer } from "@/components/VideoPlayer";
 import { QuizComponent } from "@/components/QuizComponent";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Sparkles } from "lucide-react";
 import type { Module as ModuleType } from "@/types";
 
 export default function Module() {
@@ -35,8 +35,10 @@ export default function Module() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+          className="flex items-center gap-2"
         >
+          <Sparkles className="animate-spin text-primary h-6 w-6" />
           Loading...
         </motion.div>
       </div>
@@ -45,30 +47,37 @@ export default function Module() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5 }}
       className="container mx-auto px-4 py-8"
     >
       <motion.h1
-        initial={{ x: -20 }}
-        animate={{ x: 0 }}
-        className="text-3xl font-bold mb-6"
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+        className="text-3xl font-bold mb-6 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent"
       >
         {module.title}
       </motion.h1>
 
       <div className="space-y-8">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {module.content?.map((item, index) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ delay: index * 0.1 }}
+              exit={{ opacity: 0, y: -50 }}
+              transition={{ 
+                delay: index * 0.2,
+                type: "spring",
+                stiffness: 100,
+                damping: 15
+              }}
             >
-              <Card>
+              <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
                 <CardContent className="p-6">
                   {item.type === "video" ? (
                     <div className="relative">
@@ -76,17 +85,25 @@ export default function Module() {
                         url={item.content}
                         onEnded={() => {
                           updateProgress.mutate(true);
-                          // Show completion animation
+                          // Show completion celebration
                           const element = document.createElement("div");
-                          element.className = "absolute inset-0 flex items-center justify-center bg-black/50";
-                          element.innerHTML = `<div class="text-white text-xl">✓ Completed</div>`;
+                          element.className = "fixed inset-0 flex items-center justify-center z-50";
+                          element.innerHTML = `
+                            <div class="bg-black/50 absolute inset-0 backdrop-blur-sm"></div>
+                            <div class="relative bg-white p-8 rounded-lg shadow-xl transform scale-150 animate-celebration">
+                              <div class="text-4xl mb-4">🎉</div>
+                              <div class="text-2xl font-bold text-primary">Great job!</div>
+                            </div>
+                          `;
+                          document.body.appendChild(element);
                           setTimeout(() => element.remove(), 2000);
                         }}
                       />
                       {updateProgress.isSuccess && (
                         <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ type: "spring", stiffness: 200 }}
                           className="absolute top-2 right-2"
                         >
                           <CheckCircle className="text-green-500 h-6 w-6" />
@@ -94,7 +111,10 @@ export default function Module() {
                       )}
                     </div>
                   ) : (
-                    <div
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
                       className="prose max-w-none"
                       dangerouslySetInnerHTML={{ __html: item.content }}
                     />
@@ -108,9 +128,13 @@ export default function Module() {
         {module.quizzes?.map((quiz) => (
           <motion.div
             key={quiz.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: (module.content?.length || 0) * 0.1 }}
+            transition={{ 
+              delay: (module.content?.length || 0) * 0.2,
+              type: "spring",
+              stiffness: 100
+            }}
           >
             <QuizComponent
               quiz={quiz}
@@ -119,6 +143,17 @@ export default function Module() {
           </motion.div>
         ))}
       </div>
+
+      <style jsx global>{`
+        @keyframes celebration {
+          0% { transform: scale(0.5); opacity: 0; }
+          50% { transform: scale(1.2); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-celebration {
+          animation: celebration 0.5s ease-out forwards;
+        }
+      `}</style>
     </motion.div>
   );
 }
