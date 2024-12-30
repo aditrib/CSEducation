@@ -3,11 +3,12 @@ import { useParams } from "wouter";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { QuizComponent } from "@/components/QuizComponent";
 import { Card, CardContent } from "@/components/ui/card";
+import type { Module as ModuleType } from "@/types";
 
 export default function Module() {
   const { id } = useParams<{ id: string }>();
-  
-  const { data: module } = useQuery({
+
+  const { data: module } = useQuery<ModuleType>({
     queryKey: [`/api/modules/${id}`],
   });
 
@@ -33,9 +34,9 @@ export default function Module() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">{module.title}</h1>
-      
+
       <div className="space-y-8">
-        {module.content.map((item) => (
+        {module.content?.map((item) => (
           <Card key={item.id}>
             <CardContent className="p-6">
               {item.type === "video" ? (
@@ -53,7 +54,7 @@ export default function Module() {
           </Card>
         ))}
 
-        {module.quizzes.map((quiz) => (
+        {module.quizzes?.map((quiz) => (
           <QuizComponent
             key={quiz.id}
             quiz={quiz}
