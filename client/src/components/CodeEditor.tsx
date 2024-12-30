@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Play, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, Play, CheckCircle, XCircle, Code2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CodeEditorProps {
   initialCode?: string;
-  testCases: Array<{
+  testCases?: Array<{
     input: string;
     expectedOutput: string;
   }>;
@@ -17,34 +17,44 @@ interface CodeEditorProps {
 export function CodeEditor({ initialCode = '', testCases, onSuccess }: CodeEditorProps) {
   const [code, setCode] = useState(initialCode);
   const [isRunning, setIsRunning] = useState(false);
-  const [testResults, setTestResults] = useState<boolean[]>([]);
+  const [output, setOutput] = useState<string>('');
   const { toast } = useToast();
 
-  const runCode = async () => {
+  const runCode = async (skipTests?: boolean) => {
     setIsRunning(true);
-    setTestResults([]);
+    setOutput('');
 
     try {
       const response = await fetch('/api/run-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, testCases }),
+        body: JSON.stringify({ 
+          code, 
+          testCases: skipTests ? [] : testCases,
+          captureOutput: true 
+        }),
       });
 
       const data = await response.json();
 
-      if (data.success) {
-        toast({
-          title: "Success! 🎉",
-          description: "Your code passed all test cases!",
-        });
-        onSuccess?.();
-      } else {
-        toast({
-          title: "Keep trying!",
-          description: "Your code didn't pass all test cases yet.",
-          variant: "destructive",
-        });
+      if (data.output) {
+        setOutput(data.output);
+      }
+
+      if (!skipTests && testCases) {
+        if (data.success) {
+          toast({
+            title: "Success! 🎉",
+            description: "Your code passed all test cases!",
+          });
+          onSuccess?.();
+        } else {
+          toast({
+            title: "Keep trying!",
+            description: "Your code didn't pass all test cases yet.",
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       toast({
@@ -65,7 +75,7 @@ export function CodeEditor({ initialCode = '', testCases, onSuccess }: CodeEdito
             animate={{ rotate: isRunning ? 360 : 0 }}
             transition={{ duration: 2, repeat: isRunning ? Infinity : 0 }}
           >
-            {isRunning ? <Loader2 className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+            {isRunning ? <Loader2 className="h-5 w-5" /> : <Code2 className="h-5 w-5" />}
           </motion.div>
           Python Code Editor
         </CardTitle>
@@ -92,43 +102,50 @@ export function CodeEditor({ initialCode = '', testCases, onSuccess }: CodeEdito
           </AnimatePresence>
         </div>
 
-        <Button
-          onClick={runCode}
-          disabled={isRunning || !code.trim()}
-          className="w-full"
-        >
-          {isRunning ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Play className="h-4 w-4 mr-2" />
+        <div className="flex gap-2">
+          {testCases && (
+            <Button
+              onClick={() => runCode(false)}
+              disabled={isRunning || !code.trim()}
+              className="flex-1"
+            >
+              {isRunning ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Play className="h-4 w-4 mr-2" />
+              )}
+              Run Tests
+            </Button>
           )}
-          Run Code
-        </Button>
+          <Button
+            onClick={() => runCode(true)}
+            disabled={isRunning || !code.trim()}
+            variant="outline"
+            className="flex-1"
+          >
+            <Code2 className="h-4 w-4 mr-2" />
+            Run Code
+          </Button>
+        </div>
 
         <AnimatePresence>
-          {testResults.length > 0 && (
+          {output && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="space-y-2"
+              className="mt-4"
             >
-              {testResults.map((passed, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-2"
-                >
-                  {passed ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <XCircle className="h-5 w-5 text-red-500" />
-                  )}
-                  <span>Test case {index + 1}</span>
-                </motion.div>
-              ))}
+              <Card className="bg-muted">
+                <CardHeader>
+                  <CardTitle className="text-sm">Output:</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <pre className="whitespace-pre-wrap text-sm font-mono">
+                    {output}
+                  </pre>
+                </CardContent>
+              </Card>
             </motion.div>
           )}
         </AnimatePresence>

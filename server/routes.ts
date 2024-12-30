@@ -198,47 +198,77 @@ export function registerRoutes(app: Express) {
 
   // Run Python code
   app.post("/api/run-code", async (req, res) => {
-    const { code, testCases } = req.body;
+    const { code, testCases, captureOutput } = req.body;
 
     try {
-      // Run code for each test case
-      const results = await Promise.all(
-        testCases.map(async (test: { input: string; expectedOutput: string }) => {
-          return new Promise((resolve) => {
-            const process = spawn("python3", ["-c", code]);
-            let output = "";
+      if (testCases && testCases.length > 0) {
+        // Run code for each test case
+        const results = await Promise.all(
+          testCases.map(async (test: { input: string; expectedOutput: string }) => {
+            return new Promise((resolve) => {
+              const process = spawn("python3", ["-c", code]);
+              let output = "";
 
-            process.stdout.on("data", (data) => {
-              output += data.toString();
+              process.stdout.on("data", (data) => {
+                output += data.toString();
+              });
+
+              if (test.input) {
+                process.stdin.write(test.input + "\n");
+                process.stdin.end();
+              }
+
+              process.on("close", () => {
+                output = output.trim();
+                resolve(output === test.expectedOutput.trim());
+              });
+
+              // Set timeout for code execution
+              setTimeout(() => {
+                process.kill();
+                resolve(false);
+              }, 5000);
             });
+          })
+        );
 
-            process.stdin.write(test.input + "\n");
-            process.stdin.end();
+        // All test cases must pass
+        const success = results.every((result) => result);
+        res.json({ success });
+      } else if (captureOutput) {
+        // Run code and capture output without tests
+        const process = spawn("python3", ["-c", code]);
+        let output = "";
 
-            process.on("close", () => {
-              // Clean up output (remove trailing newlines)
-              output = output.trim();
-              resolve(output === test.expectedOutput.trim());
-            });
+        process.stdout.on("data", (data) => {
+          output += data.toString();
+        });
 
-            // Set timeout for code execution
-            setTimeout(() => {
-              process.kill();
-              resolve(false);
-            }, 5000);
+        process.stderr.on("data", (data) => {
+          output += "Error: " + data.toString();
+        });
+
+        process.on("close", (code) => {
+          res.json({ output: output.trim(), success: code === 0 });
+        });
+
+        // Set timeout
+        setTimeout(() => {
+          process.kill();
+          res.json({ 
+            output: "Execution timed out after 5 seconds", 
+            success: false 
           });
-        })
-      );
-
-      // All test cases must pass
-      const success = results.every((result) => result);
-      res.json({ success });
+        }, 5000);
+      }
     } catch (error) {
-      res.status(500).json({ success: false, error: "Code execution failed" });
+      res.status(500).json({ 
+        success: false, 
+        error: "Code execution failed",
+        output: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
-
-
 
   // Get user role
   app.get("/api/user/role", async (req, res) => {
