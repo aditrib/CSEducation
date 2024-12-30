@@ -21,7 +21,12 @@ export function registerRoutes(app: Express) {
     const course = await db.query.courses.findFirst({
       where: eq(courses.id, parseInt(req.params.id)),
       with: {
-        modules: true,
+        modules: {
+          with: {
+            content: true,
+            quizzes: true,
+          },
+        },
       },
     });
 
@@ -30,6 +35,69 @@ export function registerRoutes(app: Express) {
     }
 
     res.json(course);
+  });
+
+  // Update module
+  app.put("/api/modules/:id", async (req, res) => {
+    const moduleId = parseInt(req.params.id);
+    const { title, description } = req.body;
+
+    try {
+      await db.update(modules)
+        .set({ title, description })
+        .where(eq(modules.id, moduleId));
+
+      res.json({ message: "Module updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update module" });
+    }
+  });
+
+  // Create new content (teacher only)
+  app.post("/api/content", async (req, res) => {
+    const { title, type, content: contentBody, moduleId, sequenceOrder } = req.body;
+
+    try {
+      const result = await db.insert(content).values({
+        moduleId,
+        type,
+        title,
+        content: contentBody,
+        sequenceOrder,
+      });
+
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create content" });
+    }
+  });
+
+  // Update content
+  app.put("/api/content/:id", async (req, res) => {
+    const contentId = parseInt(req.params.id);
+    const { title, content: contentBody } = req.body;
+
+    try {
+      await db.update(content)
+        .set({ title, content: contentBody })
+        .where(eq(content.id, contentId));
+
+      res.json({ message: "Content updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update content" });
+    }
+  });
+
+  // Delete content
+  app.delete("/api/content/:id", async (req, res) => {
+    const contentId = parseInt(req.params.id);
+
+    try {
+      await db.delete(content).where(eq(content.id, contentId));
+      res.json({ message: "Content deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete content" });
+    }
   });
 
   // Get module by id with content and quizzes
@@ -170,25 +238,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  // Create new content (teacher only)
-  app.post("/api/content", async (req, res) => {
-    const { title, type, content: contentBody, moduleId } = req.body;
 
-    // In a real app, we would check if the user is a teacher here
-    try {
-      const result = await db.insert(content).values({
-        moduleId,
-        type,
-        title,
-        content: contentBody,
-        sequenceOrder: 1, // You might want to calculate this based on existing content
-      });
-
-      res.json(result);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to create content" });
-    }
-  });
 
   // Get user role
   app.get("/api/user/role", async (req, res) => {

@@ -7,6 +7,7 @@ import Course from "@/pages/Course";
 import Module from "@/pages/Module";
 import Dashboard from "@/pages/Dashboard";
 import TeacherDashboard from "@/pages/TeacherDashboard";
+import EditCourse from "@/pages/EditCourse";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/module/:id" component={Module} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/teacher" component={TeacherDashboard} />
+          <Route path="/course/:id/edit" component={EditCourse} />
         </Switch>
         <Toaster />
       </div>
