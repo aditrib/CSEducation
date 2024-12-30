@@ -65,6 +65,19 @@ export const modulesRelations = relations(modules, ({ one, many }) => ({
   progress: many(progress),
 }));
 
+export const contentRelations = relations(content, ({ one }) => ({
+  module: one(modules, { fields: [content.moduleId], references: [modules.id] }),
+}));
+
+export const quizzesRelations = relations(quizzes, ({ one }) => ({
+  module: one(modules, { fields: [quizzes.moduleId], references: [modules.id] }),
+}));
+
+export const progressRelations = relations(progress, ({ one }) => ({
+  module: one(modules, { fields: [progress.moduleId], references: [modules.id] }),
+  user: one(users, { fields: [progress.userId], references: [users.id] }),
+}));
+
 // Schemas
 export const insertCourseSchema = createInsertSchema(courses);
 export const selectCourseSchema = createSelectSchema(courses);
