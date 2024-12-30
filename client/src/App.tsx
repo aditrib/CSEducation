@@ -6,6 +6,7 @@ import Home from "@/pages/Home";
 import Course from "@/pages/Course";
 import Module from "@/pages/Module";
 import Dashboard from "@/pages/Dashboard";
+import TeacherDashboard from "@/pages/TeacherDashboard";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/course/:id" component={Course} />
           <Route path="/module/:id" component={Module} />
           <Route path="/dashboard" component={Dashboard} />
+          <Route path="/teacher" component={TeacherDashboard} />
         </Switch>
         <Toaster />
       </div>

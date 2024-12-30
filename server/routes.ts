@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer } from "http";
 import { db } from "@db";
-import { courses, modules, content, quizzes, progress } from "@db/schema";
+import { courses, modules, content, quizzes, progress, users } from "@db/schema";
 import { eq, sql } from "drizzle-orm";
 import { spawn } from "child_process";
 
@@ -168,6 +168,38 @@ export function registerRoutes(app: Express) {
     } catch (error) {
       res.status(500).json({ success: false, error: "Code execution failed" });
     }
+  });
+
+  // Create new content (teacher only)
+  app.post("/api/content", async (req, res) => {
+    const { title, type, content: contentBody, moduleId } = req.body;
+
+    // In a real app, we would check if the user is a teacher here
+    try {
+      const result = await db.insert(content).values({
+        moduleId,
+        type,
+        title,
+        content: contentBody,
+        sequenceOrder: 1, // You might want to calculate this based on existing content
+      });
+
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create content" });
+    }
+  });
+
+  // Get user role
+  app.get("/api/user/role", async (req, res) => {
+    // In a real app, this would come from the session
+    const userId = 1;
+
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+
+    res.json({ role: user?.role || "student" });
   });
 
   return httpServer;

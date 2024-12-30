@@ -58,6 +58,7 @@ export const users = pgTable("users", {
   username: text("username").unique().notNull(),
   password: text("password").notNull(),
   email: text("email").unique().notNull(),
+  role: text("role").notNull().default("student"), // 'student' or 'teacher'
 });
 
 // Relations
@@ -98,6 +99,9 @@ export const selectContentSchema = createSelectSchema(content);
 export const insertQuizSchema = createInsertSchema(quizzes);
 export const selectQuizSchema = createSelectSchema(quizzes);
 
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);
+
 export type Course = typeof courses.$inferSelect;
 export type Module = typeof modules.$inferSelect;
 export type Content = typeof content.$inferSelect;
@@ -123,3 +127,6 @@ export interface Quiz {
 }
 
 export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+export type UserRole = "student" | "teacher";
