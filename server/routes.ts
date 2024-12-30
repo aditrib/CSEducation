@@ -202,5 +202,37 @@ export function registerRoutes(app: Express) {
     res.json({ role: user?.role || "student" });
   });
 
+  // Get student responses (teacher only)
+  app.get("/api/student-responses", async (req, res) => {
+    try {
+      // In a real app, we would verify the user is a teacher here
+      const responses = await db.query.progress.findMany({
+        with: {
+          user: true,
+          module: {
+            with: {
+              quizzes: true,
+            },
+          },
+        },
+        orderBy: (progress, { desc }) => [desc(progress.lastAccessed)],
+      });
+
+      // Transform the data to include username and quiz answers
+      const formattedResponses = responses.map((response) => ({
+        userId: response.userId,
+        username: response.user.username,
+        moduleId: response.moduleId,
+        quizId: response.module.quizzes[0]?.id, // Assuming one quiz per module for simplicity
+        answers: response.answers || [],
+        submittedAt: response.lastAccessed.toISOString(),
+      }));
+
+      res.json(formattedResponses);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch student responses" });
+    }
+  });
+
   return httpServer;
 }

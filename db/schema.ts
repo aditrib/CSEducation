@@ -51,6 +51,7 @@ export const progress = pgTable("progress", {
   moduleId: integer("module_id").references(() => modules.id).notNull(),
   completed: boolean("completed").default(false).notNull(),
   lastAccessed: timestamp("last_accessed").defaultNow().notNull(),
+  answers: json("answers").$type<(string | number)[]>(), // Store quiz answers
 });
 
 export const users = pgTable("users", {

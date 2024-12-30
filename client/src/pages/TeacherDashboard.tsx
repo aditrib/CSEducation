@@ -1,7 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useLocation } from "wouter";
 import {
   Card,
   CardContent,
@@ -9,172 +7,120 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import type { Course, Module, Content, Quiz } from "@/types";
+import { Edit2, Book, Users } from "lucide-react";
+import type { Course, Module, Quiz } from "@/types";
 
-const contentSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  type: z.enum(["text", "video"]),
-  content: z.string().min(1, "Content is required"),
-});
+interface StudentResponse {
+  userId: number;
+  username: string;
+  moduleId: number;
+  quizId: number;
+  answers: (string | number)[];
+  submittedAt: string;
+}
 
 export default function TeacherDashboard() {
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof contentSchema>>({
-    resolver: zodResolver(contentSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      type: "text",
-      content: "",
-    },
-  });
 
   const { data: courses } = useQuery<Course[]>({
     queryKey: ["/api/courses"],
   });
 
-  const createContent = useMutation({
-    mutationFn: async (values: z.infer<typeof contentSchema>) => {
-      const response = await fetch("/api/content", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to create content");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Content created",
-        description: "Your content has been successfully created",
-      });
-      form.reset();
-    },
+  const { data: studentResponses } = useQuery<StudentResponse[]>({
+    queryKey: ["/api/student-responses"],
   });
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Teacher Dashboard</h1>
 
-      <div className="grid gap-6">
+      <div className="grid gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>Create Content</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Book className="h-5 w-5" />
+              My Courses
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit((data) => createContent.mutate(data))}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <ScrollArea className="h-[400px] pr-4">
+              <div className="space-y-4">
+                {courses?.map((course) => (
+                  <Card key={course.id} className="p-4">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold">{course.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {course.description}
+                        </p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLocation(`/course/${course.id}/edit`)}
+                      >
+                        <Edit2 className="h-4 w-4 mr-2" />
+                        Edit Course
+                      </Button>
+                    </div>
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Content Type</FormLabel>
-                      <FormControl>
-                        <select
-                          {...field}
-                          className="w-full p-2 border rounded-md"
-                        >
-                          <option value="text">Text</option>
-                          <option value="video">Video</option>
-                        </select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="content"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Content</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} className="min-h-[200px]" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button type="submit">Create Content</Button>
-              </form>
-            </Form>
+                    {course.modules?.map((module) => (
+                      <div key={module.id} className="pl-4 mt-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-medium">{module.title}</h4>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setLocation(`/module/${module.id}/edit`)}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </Card>
+                ))}
+              </div>
+            </ScrollArea>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>My Courses</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Student Responses
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4">
-              {courses?.map((course) => (
-                <Card key={course.id}>
-                  <CardHeader>
-                    <CardTitle>{course.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{course.description}</p>
-                    <Button
-                      variant="outline"
-                      className="mt-4"
-                      onClick={() => {
-                        // Handle editing course
-                      }}
-                    >
-                      Edit Course
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <ScrollArea className="h-[400px] pr-4">
+              <div className="space-y-4">
+                {studentResponses?.map((response) => (
+                  <Card key={`${response.userId}-${response.quizId}`} className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium">{response.username}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Submitted: {new Date(response.submittedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <h4 className="text-sm font-medium mb-2">Answers:</h4>
+                      {response.answers.map((answer, index) => (
+                        <div key={index} className="pl-4 text-sm">
+                          <span className="text-muted-foreground">Q{index + 1}:</span>{" "}
+                          {typeof answer === "string" ? answer : `Option ${answer + 1}`}
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </ScrollArea>
           </CardContent>
         </Card>
       </div>
