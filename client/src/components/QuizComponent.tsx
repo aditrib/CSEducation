@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { CheckCircle2 } from "lucide-react";
 import type { Quiz, QuizQuestion } from "@/types";
 
 interface QuizComponentProps {
@@ -15,6 +16,7 @@ interface QuizComponentProps {
 export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | string)[]>([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
   const handleAnswer = (answer: number | string) => {
@@ -43,20 +45,19 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
 
       if (question.type === 'multiple-choice') {
         if (answer === question.correctAnswer) score++;
-      } else if (question.type === 'free-text') {
-        // Simple exact match for free text
-        if (answer === question.expectedAnswer) score++;
       } else if (question.type === 'code' && question.testCases) {
         const passed = await runCode(answer as string, question.testCases);
         if (passed) score++;
       }
+      // Free text responses are not scored
     }
 
     toast({
-      title: "Quiz completed!",
-      description: `You got ${score} out of ${questions.length} questions correct.`
+      title: "Quiz submitted!",
+      description: `Thank you for completing the quiz.`
     });
 
+    setIsSubmitted(true);
     onComplete();
   };
 
@@ -116,6 +117,22 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
   };
 
   const question = quiz.questions[currentQuestion];
+
+  if (isSubmitted) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="pt-6">
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <CheckCircle2 className="h-12 w-12 text-green-500 mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Quiz Submitted</h3>
+            <p className="text-muted-foreground">
+              Thank you for completing this quiz!
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
