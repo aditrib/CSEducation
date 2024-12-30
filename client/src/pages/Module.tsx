@@ -9,6 +9,7 @@ import { AnimatedIllustration } from "@/components/AnimatedIllustration";
 import { LearningMascot } from "@/components/LearningMascot";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Module as ModuleType } from "@/types";
+import { CodeEditor } from "@/components/CodeEditor";
 
 export default function Module() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,7 @@ export default function Module() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: 1, // In a real app, this would come from auth
+          userId: 1, 
           moduleId: parseInt(id),
           completed,
         }),
@@ -39,12 +40,17 @@ export default function Module() {
   });
 
   useEffect(() => {
-    // Initial greeting
     if (module) {
       setMascotState('talking');
       setMascotMessage(`Welcome to ${module.title}! I'm here to help you learn. 😊`);
     }
   }, [module]);
+
+  const handleCodeSuccess = () => {
+    updateProgress.mutate(true);
+    setMascotState('celebrating');
+    setMascotMessage("Great job writing your first Python code! 🎉 You're on your way to becoming a programmer!");
+  };
 
   if (!module) {
     return (
@@ -69,7 +75,6 @@ export default function Module() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-4xl mx-auto space-y-8"
       >
-        {/* Module Header */}
         <div className="text-center mb-12">
           <motion.div
             initial={{ scale: 0 }}
@@ -99,7 +104,6 @@ export default function Module() {
           </motion.p>
         </div>
 
-        {/* Content Section */}
         <ScrollArea className="h-[calc(100vh-300px)]">
           <div className="space-y-8 p-4">
             {module.content?.map((item, index) => (
@@ -110,14 +114,26 @@ export default function Module() {
                 transition={{ delay: index * 0.2 }}
                 onViewportEnter={() => {
                   setMascotState('thinking');
-                  setMascotMessage(item.type === 'video' 
-                    ? "Let's watch this video together! 🎥" 
-                    : "Take your time reading this section. 📚");
+                  setMascotMessage(
+                    item.title.includes('Python') 
+                      ? "Let's write some Python code! Don't worry, I'll help you! 💻" 
+                      : item.type === 'video'
+                        ? "Let's watch this video together! 🎥"
+                        : "Take your time reading this section. 📚"
+                  );
                 }}
               >
                 <Card className="overflow-hidden border-2 hover:border-primary/50 transition-colors duration-300">
                   <CardHeader className="flex flex-row items-center gap-4">
-                    <AnimatedIllustration type={item.type === "video" ? "learning" : "reading"} />
+                    <AnimatedIllustration 
+                      type={
+                        item.title.includes('Python') 
+                          ? "thinking"
+                          : item.type === "video" 
+                            ? "learning" 
+                            : "reading"
+                      } 
+                    />
                     <CardTitle>{item.title}</CardTitle>
                   </CardHeader>
 
@@ -151,7 +167,21 @@ export default function Module() {
                           dangerouslySetInnerHTML={{ __html: item.content }}
                         />
 
-                        {/* Decorative elements */}
+                        {item.title.includes('Python') && (
+                          <div className="mt-8">
+                            <CodeEditor
+                              initialCode="# Write your code here"
+                              testCases={[
+                                {
+                                  input: "",
+                                  expectedOutput: "Hello World"
+                                }
+                              ]}
+                              onSuccess={handleCodeSuccess}
+                            />
+                          </div>
+                        )}
+
                         <motion.div
                           className="absolute -top-4 -left-4 w-12 h-12 bg-primary/5 rounded-full"
                           animate={{ 
@@ -175,7 +205,6 @@ export default function Module() {
               </motion.div>
             ))}
 
-            {/* Quiz Section */}
             {module.quizzes?.map((quiz) => (
               <motion.div
                 key={quiz.id}
@@ -204,7 +233,6 @@ export default function Module() {
         </ScrollArea>
       </motion.div>
 
-      {/* Learning Mascot */}
       <LearningMascot
         state={mascotState}
         message={mascotMessage}
