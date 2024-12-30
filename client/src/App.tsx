@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Home from "@/pages/Home";
 import Course from "@/pages/Course";
 import Module from "@/pages/Module";
+import Dashboard from "@/pages/Dashboard";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" component={Home} />
           <Route path="/course/:id" component={Course} />
           <Route path="/module/:id" component={Module} />
+          <Route path="/dashboard" component={Dashboard} />
         </Switch>
         <Toaster />
       </div>
