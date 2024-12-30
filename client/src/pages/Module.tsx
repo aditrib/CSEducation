@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams } from "wouter";
-import { FlipContentCard } from "@/components/FlipContentCard";
+import { VideoPlayer } from "@/components/VideoPlayer";
 import { QuizComponent } from "@/components/QuizComponent";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Sparkles, BookOpen } from "lucide-react";
+import { AnimatedIllustration } from "@/components/AnimatedIllustration";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Module as ModuleType } from "@/types";
 
 export default function Module() {
@@ -39,121 +39,138 @@ export default function Module() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
-          className="flex items-center gap-2"
+          className="flex items-center gap-4"
         >
-          <Sparkles className="animate-spin text-primary h-6 w-6" />
-          Loading...
+          <AnimatedIllustration type="learning" />
+          <span className="text-lg">Loading your awesome lesson...</span>
         </motion.div>
       </div>
     );
   }
 
-  const currentContent = module.content?.[currentContentIndex];
-  const totalPages = (module.content?.length || 0) + (module.quizzes?.length || 0);
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5 }}
-      className="container mx-auto px-4 py-8"
-    >
-      <motion.div 
-        className="flex items-center gap-4 mb-8"
-        initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+    <div className="container mx-auto px-4 py-8 min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-4xl mx-auto space-y-8"
       >
-        <BookOpen className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-          {module.title}
-        </h1>
-      </motion.div>
-
-      <div className="max-w-4xl mx-auto">
-        <AnimatePresence mode="wait">
-          {currentContent ? (
-            <motion.div
-              key={`content-${currentContent.id}`}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.3 }}
-            >
-              <FlipContentCard
-                content={currentContent}
-                onComplete={() => updateProgress.mutate(true)}
-              />
-            </motion.div>
-          ) : module.quizzes?.map((quiz) => (
-            <motion.div
-              key={quiz.id}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.3 }}
-            >
-              <QuizComponent
-                quiz={quiz}
-                onComplete={() => updateProgress.mutate(true)}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        <motion.div
-          className="flex justify-between mt-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Button
-            variant="outline"
-            onClick={() => setCurrentContentIndex(prev => prev - 1)}
-            disabled={currentContentIndex === 0}
-            className="flex items-center gap-2"
+        {/* Module Header */}
+        <div className="text-center mb-12">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className="flex justify-center mb-6"
           >
-            <ChevronLeft className="h-4 w-4" />
-            Previous Page
-          </Button>
+            <AnimatedIllustration type="learning" />
+          </motion.div>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            Page {currentContentIndex + 1} of {totalPages}
-            <div className="flex gap-1">
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                    i === currentContentIndex ? 'bg-primary' : 'bg-muted'
-                  }`}
+          <motion.h1 
+            className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            {module.title}
+          </motion.h1>
+
+          <motion.p
+            className="text-muted-foreground max-w-2xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            {module.description}
+          </motion.p>
+        </div>
+
+        {/* Content Section */}
+        <ScrollArea className="h-[calc(100vh-300px)]">
+          <div className="space-y-8 p-4">
+            {module.content?.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.2 }}
+              >
+                <Card className="overflow-hidden border-2 hover:border-primary/50 transition-colors duration-300">
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    <AnimatedIllustration type={item.type === "video" ? "learning" : "reading"} />
+                    <CardTitle>{item.title}</CardTitle>
+                  </CardHeader>
+
+                  <CardContent>
+                    {item.type === "video" ? (
+                      <div className="relative rounded-lg overflow-hidden">
+                        <VideoPlayer
+                          url={item.content}
+                          onEnded={() => updateProgress.mutate(true)}
+                        />
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20"
+                          initial={false}
+                          whileHover={{ opacity: 0 }}
+                          animate={{ opacity: 0.1 }}
+                        />
+                      </div>
+                    ) : (
+                      <motion.div
+                        className="prose max-w-none relative"
+                        initial={false}
+                        whileHover={{ scale: 1.01 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div
+                          className="relative z-10"
+                          dangerouslySetInnerHTML={{ __html: item.content }}
+                        />
+
+                        {/* Decorative elements */}
+                        <motion.div
+                          className="absolute -top-4 -left-4 w-12 h-12 bg-primary/5 rounded-full"
+                          animate={{ 
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 90, 0],
+                          }}
+                          transition={{ duration: 4, repeat: Infinity }}
+                        />
+                        <motion.div
+                          className="absolute -bottom-4 -right-4 w-16 h-16 bg-purple-500/5 rounded-full"
+                          animate={{ 
+                            scale: [1.2, 1, 1.2],
+                            rotate: [0, -90, 0],
+                          }}
+                          transition={{ duration: 4, repeat: Infinity }}
+                        />
+                      </motion.div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+
+            {/* Quiz Section */}
+            {module.quizzes?.map((quiz) => (
+              <motion.div
+                key={quiz.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: (module.content?.length || 0) * 0.2 }}
+              >
+                <div className="flex justify-center mb-4">
+                  <AnimatedIllustration type="quiz" />
+                </div>
+                <QuizComponent
+                  quiz={quiz}
+                  onComplete={() => updateProgress.mutate(true)}
                 />
-              ))}
-            </div>
+              </motion.div>
+            ))}
           </div>
-
-          <Button
-            variant="outline"
-            onClick={() => setCurrentContentIndex(prev => prev + 1)}
-            disabled={currentContentIndex >= (module.content?.length || 0) - 1}
-            className="flex items-center gap-2"
-          >
-            Next Page
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </motion.div>
-      </div>
-
-      <style jsx global>{`
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-          100% { transform: translateY(0px); }
-        }
-        .float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
-    </motion.div>
+        </ScrollArea>
+      </motion.div>
+    </div>
   );
 }
