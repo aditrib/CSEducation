@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams } from "wouter";
 import { VideoPlayer } from "@/components/VideoPlayer";
@@ -6,12 +6,14 @@ import { QuizComponent } from "@/components/QuizComponent";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedIllustration } from "@/components/AnimatedIllustration";
+import { LearningMascot } from "@/components/LearningMascot";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Module as ModuleType } from "@/types";
 
 export default function Module() {
   const { id } = useParams<{ id: string }>();
-  const [currentContentIndex, setCurrentContentIndex] = useState(0);
+  const [mascotState, setMascotState] = useState<'idle' | 'talking' | 'celebrating' | 'thinking'>('idle');
+  const [mascotMessage, setMascotMessage] = useState<string>();
 
   const { data: module } = useQuery<ModuleType>({
     queryKey: [`/api/modules/${id}`],
@@ -30,7 +32,19 @@ export default function Module() {
       });
       return response.json();
     },
+    onSuccess: () => {
+      setMascotState('celebrating');
+      setMascotMessage("Great job! You're making excellent progress! 🎉");
+    }
   });
+
+  useEffect(() => {
+    // Initial greeting
+    if (module) {
+      setMascotState('talking');
+      setMascotMessage(`Welcome to ${module.title}! I'm here to help you learn. 😊`);
+    }
+  }, [module]);
 
   if (!module) {
     return (
@@ -94,6 +108,12 @@ export default function Module() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.2 }}
+                onViewportEnter={() => {
+                  setMascotState('thinking');
+                  setMascotMessage(item.type === 'video' 
+                    ? "Let's watch this video together! 🎥" 
+                    : "Take your time reading this section. 📚");
+                }}
               >
                 <Card className="overflow-hidden border-2 hover:border-primary/50 transition-colors duration-300">
                   <CardHeader className="flex flex-row items-center gap-4">
@@ -106,7 +126,11 @@ export default function Module() {
                       <div className="relative rounded-lg overflow-hidden">
                         <VideoPlayer
                           url={item.content}
-                          onEnded={() => updateProgress.mutate(true)}
+                          onEnded={() => {
+                            updateProgress.mutate(true);
+                            setMascotState('celebrating');
+                            setMascotMessage("You've completed the video! Ready for the next section? 🌟");
+                          }}
                         />
                         <motion.div
                           className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20"
@@ -158,19 +182,37 @@ export default function Module() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: (module.content?.length || 0) * 0.2 }}
+                onViewportEnter={() => {
+                  setMascotState('talking');
+                  setMascotMessage("Time to test your knowledge! Don't worry, I'm here to help! 📝");
+                }}
               >
                 <div className="flex justify-center mb-4">
                   <AnimatedIllustration type="quiz" />
                 </div>
                 <QuizComponent
                   quiz={quiz}
-                  onComplete={() => updateProgress.mutate(true)}
+                  onComplete={() => {
+                    updateProgress.mutate(true);
+                    setMascotState('celebrating');
+                    setMascotMessage("Amazing work on the quiz! You're doing great! 🎉");
+                  }}
                 />
               </motion.div>
             ))}
           </div>
         </ScrollArea>
       </motion.div>
+
+      {/* Learning Mascot */}
+      <LearningMascot
+        state={mascotState}
+        message={mascotMessage}
+        onMessageComplete={() => {
+          setMascotState('idle');
+          setMascotMessage(undefined);
+        }}
+      />
     </div>
   );
 }
