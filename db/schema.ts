@@ -15,7 +15,7 @@ export const modules = pgTable("modules", {
   courseId: integer("course_id").references(() => courses.id).notNull(),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  order: integer("order").notNull(),
+  sequenceOrder: integer("sequence_order").notNull(),
 });
 
 export const content = pgTable("content", {
@@ -24,7 +24,7 @@ export const content = pgTable("content", {
   type: text("type").notNull(), // 'video' | 'text'
   title: text("title").notNull(),
   content: text("content").notNull(), // video URL or rich text
-  order: integer("order").notNull(),
+  sequenceOrder: integer("sequence_order").notNull(),
 });
 
 export const quizzes = pgTable("quizzes", {
@@ -82,3 +82,4 @@ export type Course = typeof courses.$inferSelect;
 export type Module = typeof modules.$inferSelect;
 export type Content = typeof content.$inferSelect;
 export type Quiz = typeof quizzes.$inferSelect;
+export type User = typeof users.$inferSelect;
