@@ -32,9 +32,16 @@ export const quizzes = pgTable("quizzes", {
   moduleId: integer("module_id").references(() => modules.id).notNull(),
   title: text("title").notNull(),
   questions: json("questions").$type<{
+    id: number;
+    type: 'multiple-choice' | 'free-text' | 'code';
     question: string;
-    options: string[];
-    correctAnswer: number;
+    options?: string[];
+    correctAnswer?: number;
+    expectedAnswer?: string;
+    testCases?: {
+      input: string;
+      expectedOutput: string;
+    }[];
   }[]>().notNull(),
 });
 
@@ -94,5 +101,25 @@ export const selectQuizSchema = createSelectSchema(quizzes);
 export type Course = typeof courses.$inferSelect;
 export type Module = typeof modules.$inferSelect;
 export type Content = typeof content.$inferSelect;
-export type Quiz = typeof quizzes.$inferSelect;
+
+export interface QuizQuestion {
+  id: number;
+  type: 'multiple-choice' | 'free-text' | 'code';
+  question: string;
+  options?: string[];
+  correctAnswer?: number;
+  expectedAnswer?: string;
+  testCases?: {
+    input: string;
+    expectedOutput: string;
+  }[];
+}
+
+export interface Quiz {
+  id: number;
+  moduleId: number;
+  title: string;
+  questions: QuizQuestion[];
+}
+
 export type User = typeof users.$inferSelect;

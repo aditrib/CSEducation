@@ -3,6 +3,7 @@ import { createServer } from "http";
 import { db } from "@db";
 import { courses, modules, content, quizzes, progress } from "@db/schema";
 import { eq, sql } from "drizzle-orm";
+import { spawn } from "child_process";
 
 export function registerRoutes(app: Express) {
   const httpServer = createServer(app);
@@ -125,6 +126,48 @@ export function registerRoutes(app: Express) {
         lastAccessed: activity.lastAccessed
       }))
     });
+  });
+
+  // Run Python code
+  app.post("/api/run-code", async (req, res) => {
+    const { code, testCases } = req.body;
+
+    try {
+      // Run code for each test case
+      const results = await Promise.all(
+        testCases.map(async (test: { input: string; expectedOutput: string }) => {
+          return new Promise((resolve) => {
+            const process = spawn("python3", ["-c", code]);
+            let output = "";
+
+            process.stdout.on("data", (data) => {
+              output += data.toString();
+            });
+
+            process.stdin.write(test.input + "\n");
+            process.stdin.end();
+
+            process.on("close", () => {
+              // Clean up output (remove trailing newlines)
+              output = output.trim();
+              resolve(output === test.expectedOutput.trim());
+            });
+
+            // Set timeout for code execution
+            setTimeout(() => {
+              process.kill();
+              resolve(false);
+            }, 5000);
+          });
+        })
+      );
+
+      // All test cases must pass
+      const success = results.every((result) => result);
+      res.json({ success });
+    } catch (error) {
+      res.status(500).json({ success: false, error: "Code execution failed" });
+    }
   });
 
   return httpServer;

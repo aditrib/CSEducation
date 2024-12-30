@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import type { Quiz } from "@/types";
+import type { Quiz, QuizQuestion } from "@/types";
 
 interface QuizComponentProps {
   quiz: Quiz;
@@ -13,27 +14,105 @@ interface QuizComponentProps {
 
 export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<number[]>([]);
+  const [answers, setAnswers] = useState<(number | string)[]>([]);
   const { toast } = useToast();
 
-  const handleAnswer = (answer: number) => {
+  const handleAnswer = (answer: number | string) => {
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = answer;
     setAnswers(newAnswers);
   };
 
-  const handleSubmit = () => {
-    const correctAnswers = quiz.questions.map(q => q.correctAnswer);
-    const score = answers.reduce((acc, answer, index) => 
-      answer === correctAnswers[index] ? acc + 1 : acc, 0
-    );
+  const runCode = async (code: string, testCases: { input: string; expectedOutput: string; }[]) => {
+    const response = await fetch('/api/run-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, testCases }),
+    });
+    const result = await response.json();
+    return result.success;
+  };
+
+  const handleSubmit = async () => {
+    let score = 0;
+    const questions = quiz.questions;
+
+    for (let i = 0; i < questions.length; i++) {
+      const question = questions[i];
+      const answer = answers[i];
+
+      if (question.type === 'multiple-choice') {
+        if (answer === question.correctAnswer) score++;
+      } else if (question.type === 'free-text') {
+        // Simple exact match for free text
+        if (answer === question.expectedAnswer) score++;
+      } else if (question.type === 'code' && question.testCases) {
+        const passed = await runCode(answer as string, question.testCases);
+        if (passed) score++;
+      }
+    }
 
     toast({
       title: "Quiz completed!",
-      description: `You got ${score} out of ${quiz.questions.length} questions correct.`
+      description: `You got ${score} out of ${questions.length} questions correct.`
     });
 
     onComplete();
+  };
+
+  const renderQuestion = (question: QuizQuestion) => {
+    switch (question.type) {
+      case 'multiple-choice':
+        return (
+          <RadioGroup
+            value={answers[currentQuestion]?.toString()}
+            onValueChange={(value) => handleAnswer(parseInt(value))}
+          >
+            {question.options?.map((option, index) => (
+              <div key={index} className="flex items-center space-x-2 mb-2">
+                <RadioGroupItem value={index.toString()} id={`option-${index}`} />
+                <Label htmlFor={`option-${index}`}>{option}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        );
+
+      case 'free-text':
+        return (
+          <Textarea
+            value={answers[currentQuestion]?.toString() || ''}
+            onChange={(e) => handleAnswer(e.target.value)}
+            placeholder="Type your answer here..."
+            className="min-h-[100px]"
+          />
+        );
+
+      case 'code':
+        return (
+          <div className="space-y-4">
+            <Textarea
+              value={answers[currentQuestion]?.toString() || ''}
+              onChange={(e) => handleAnswer(e.target.value)}
+              placeholder="Write your Python code here..."
+              className="font-mono min-h-[150px]"
+            />
+            {question.testCases && (
+              <div className="bg-muted p-4 rounded-md">
+                <h4 className="font-semibold mb-2">Test Cases:</h4>
+                {question.testCases.map((test, index) => (
+                  <div key={index} className="text-sm">
+                    <p>Input: {test.input}</p>
+                    <p>Expected: {test.expectedOutput}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
   const question = quiz.questions[currentQuestion];
@@ -50,17 +129,7 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
           </h3>
           <p className="mb-4">{question.question}</p>
 
-          <RadioGroup
-            value={answers[currentQuestion]?.toString()}
-            onValueChange={(value) => handleAnswer(parseInt(value))}
-          >
-            {question.options.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2 mb-2">
-                <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-                <Label htmlFor={`option-${index}`}>{option}</Label>
-              </div>
-            ))}
-          </RadioGroup>
+          {renderQuestion(question)}
         </div>
 
         <div className="flex justify-between">
