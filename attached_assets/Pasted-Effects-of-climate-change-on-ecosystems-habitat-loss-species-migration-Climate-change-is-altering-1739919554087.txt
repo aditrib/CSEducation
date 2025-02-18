@@ -1,0 +1,19 @@
+Effects of climate change on ecosystems, habitat loss, species migration.
+Climate change is altering ecosystems by increasing temperatures, shifting weather patterns, and causing more extreme events like droughts and hurricanes. As a result, many species migrate to new areas to survive, while others face habitat loss, leading to population declines or even extinction.
+Machine learning basics, predictive modeling, decision trees.
+Machine learning helps computers find patterns in data and make predictions, just like how scientists use climate data to forecast ecosystem changes. Decision trees, a simple type of machine learning model, help classify whether a species might thrive, migrate, or decline based on environmental factors.
+Climate Time Machine demo
+In the Climate Time Machine demo, you’ll explore interactive visualizations of how Earth’s climate has changed over time, connecting to this section by showing how historical climate data and predictive models help scientists analyze trends, forecast biodiversity shifts, and understand the impact of climate change on ecosystems.
+https://climate.nasa.gov/interactives/climate-time-machine/?intent=021
+How does climate change impact ecosystems?
+A) It stabilizes species populations by maintaining consistent weather patterns.
+B) It causes species migration, habitat loss, and changes in population sizes.
+C) It only affects marine ecosystems, leaving land ecosystems unchanged.
+D) It prevents extreme weather events such as droughts and hurricanes.
+Correct Answer: B – Climate change alters ecosystems by shifting temperatures, leading to habitat loss, species migration, and population declines.
+How can machine learning help scientists study climate change’s impact on biodiversity?
+A) It can classify and predict whether species will thrive, migrate, or decline based on environmental factors.
+B) It automatically prevents species from going extinct by changing their environment.
+C) It replaces scientists by making decisions about conservation efforts.
+D) It randomly guesses future climate conditions without using past data.
+Correct Answer: A – Machine learning models, such as decision trees, analyze environmental factors to predict how species might respond to climate change.
