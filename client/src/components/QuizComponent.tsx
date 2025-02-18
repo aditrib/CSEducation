@@ -3,11 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, ChevronLeft, ChevronRight, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Quiz, QuizQuestion } from "@/types";
+import type { Quiz } from "@/types";
 
 interface QuizComponentProps {
   quiz: Quiz;
@@ -33,16 +32,12 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
     for (let i = 0; i < questions.length; i++) {
       const question = questions[i];
       const answer = answers[i];
-
-      if (question.type === 'multiple-choice') {
-        if (answer === question.correctAnswer) score++;
-      }
-      // Free text responses are not scored
+      if (answer === question.correctAnswer) score++;
     }
 
     toast({
       title: "Quiz submitted!",
-      description: `Thank you for completing the quiz.`,
+      description: `You got ${score} out of ${questions.length} questions correct!`,
     });
 
     setIsSubmitted(true);
@@ -109,39 +104,24 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
             </h3>
             <p className="mb-4">{question.question}</p>
 
-            {question.type === 'multiple-choice' && (
-              <RadioGroup
-                value={answers[currentQuestion]?.toString()}
-                onValueChange={(value) => handleAnswer(parseInt(value))}
-              >
-                {question.options?.map((option, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-center space-x-2 mb-2"
-                  >
-                    <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-                    <Label htmlFor={`option-${index}`}>{option}</Label>
-                  </motion.div>
-                ))}
-              </RadioGroup>
-            )}
-
-            {question.type === 'free-text' && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Textarea
-                  value={answers[currentQuestion]?.toString() || ''}
-                  onChange={(e) => handleAnswer(e.target.value)}
-                  placeholder="Type your answer here..."
-                  className="min-h-[100px]"
-                />
-              </motion.div>
-            )}
+            <RadioGroup
+              value={answers[currentQuestion]?.toString()}
+              onValueChange={(value) => handleAnswer(parseInt(value))}
+              className="space-y-3"
+            >
+              {question.options.map((option, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center space-x-2"
+                >
+                  <RadioGroupItem value={index.toString()} id={`option-${index}`} />
+                  <Label htmlFor={`option-${index}`}>{option}</Label>
+                </motion.div>
+              ))}
+            </RadioGroup>
           </motion.div>
         </AnimatePresence>
 

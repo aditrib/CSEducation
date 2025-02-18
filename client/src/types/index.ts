@@ -30,9 +30,13 @@ export interface Quiz {
   id: number;
   moduleId: number;
   title: string;
-  questions: {
-    question: string;
-    options: string[];
-    correctAnswer: number;
-  }[];
+  questions: QuizQuestion[];
+}
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation?: string;
+  type?: 'multiple-choice' | 'free-text';
 }
