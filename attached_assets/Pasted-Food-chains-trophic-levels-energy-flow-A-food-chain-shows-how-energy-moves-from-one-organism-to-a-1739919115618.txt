@@ -1,0 +1,20 @@
+Food chains, trophic levels, energy flow.
+A food chain shows how energy moves from one organism to another, starting with producers (plants), followed by primary consumers(herbivores), and ending with secondary and tertiary consumers (predators). In reality, species interact in a food web, where organisms eat and are eaten by multiple species, creating a balanced and interconnected ecosystem.
+Graph representations, breadth-first search (BFS), depth-first search (DFS).
+A graph is a way to represent relationships using nodes (species) and edges (who eats whom) in a food web. Scientists use Breadth-First Search (BFS) to explore species connections layer by layer and Depth-First Search (DFS) to trace pathways through the web, helping predict how removing one species might impact the ecosystem.
+Food Webs Demonstration
+In the Food Webs Demonstration, you’ll explore how food chains connect to form complex food webs, using graph-based models to visualize species interactions—connecting to this section by showing how graph algorithms like BFS and DFS help scientists study energy flow and predict the impact of species loss in ecosystems.
+https://demonstrations.wolfram.com/FoodWebs
+Check for Understanding
+What is the main difference between a food chain and a food web?
+A) A food chain shows multiple feeding relationships, while a food web follows only one path.
+B) A food chain represents a single energy pathway, while a food web includes multiple interconnected pathways.
+C) A food chain is only found in marine ecosystems, while a food web applies to all ecosystems.
+D) A food web only includes predators, while a food chain includes all organisms.
+Correct Answer: B – A food chain follows a single pathway of energy flow, while a food web represents the complex interactions of multiple species.
+How can graph algorithms like BFS and DFS help scientists study food webs?
+A) They help scientists predict how changes to one species affect the rest of the ecosystem.
+B) They create food chains by randomly assigning predator-prey relationships.
+C) They remove unnecessary species from food webs to simplify analysis.
+D) They prevent species extinction by controlling population sizes.
+Correct Answer: A – BFS and DFS allow scientists to analyze species connections and predict how removing one species might impact the entire ecosystem.
