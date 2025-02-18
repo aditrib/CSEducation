@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { relations } from "drizzle-orm";
 
@@ -35,6 +35,7 @@ export const quizzes = pgTable("quizzes", {
     question: string;
     options: string[];
     correctAnswer: number;
+    explanation?: string;
   }[]>().notNull(),
 });
 
@@ -45,7 +46,10 @@ export const progress = pgTable("progress", {
   completed: boolean("completed").default(false).notNull(),
   lastAccessed: timestamp("last_accessed").defaultNow().notNull(),
   answers: json("answers").$type<(string | number)[]>(), // Store quiz answers
-});
+}, (table) => ({
+  // Add unique constraint on userId and moduleId combination
+  userModuleUnique: unique().on(table.userId, table.moduleId),
+}));
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
