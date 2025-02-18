@@ -1,0 +1,24 @@
+2. Population Dynamics and Simulation Algorithms
+Predator-prey relationships, exponential vs. logistic growth, carrying capacity.
+In an ecosystem, predator and prey populations change over time—when prey numbers increase, predators have more food, but if prey numbers drop, predators struggle to survive. Population growth follows either exponential growth (rapid, unlimited growth, like bacteria multiplying) or logistic growth (growth that slows as resources become scarce, reaching a carrying capacity, or the maximum population an environment can support).
+Simulation algorithms, Monte Carlo methods, cellular automata.
+on environmental factors. One method, the Monte Carlo method, uses random sampling to estimate different possible future scenarios, while cellular automata break ecosystems into grids and apply simple rules to simulate complex patterns of movement, reproduction, and survival.
+Lotka-Volterra Competition Model
+In the Lotka-Volterra Competition Model demo, you’ll explore how two species compete for the same resources, adjusting growth rates and carrying capacities to see how populations change over time—connecting to the population dynamics concepts in this section by showing how mathematical models help predict species interactions and ecosystem balance.
+https://demonstrations.wolfram.com/LotkaVolterraCompetitionModel/
+ Elephant Population Estimation demo
+In the Elephant Population Estimation demo, you’ll use an interactive tool to simulate how scientists collect and analyze sample data to estimate elephant populations, connecting to simulation algorithms in this section by showing how computational methods help model real-world ecosystems and track species over time.
+https://www.biointeractive.org/classroom-resources/how-can-we-measure-elephant-populations
+Check for Understanding
+Which statement best explains what happens when a predator population grows too large for the available prey?
+A) The predator population keeps increasing since they are stronger.
+B) The predator population eventually declines due to food shortages.
+C) The prey population will always recover faster than the predators.
+D) The ecosystem will remain unchanged regardless of predator-prey balance.
+Correct Answer: B – If there are too many predators and not enough prey, predators will struggle to find food, leading to a decline in their population.
+How does the Monte Carlo method help scientists study population changes?
+A) It randomly generates multiple possible outcomes to estimate future population trends.
+B) It predicts exact population sizes with 100% accuracy.
+C) It models food chains using fixed, unchanging rules.
+D) It divides an ecosystem into sections to track animal movement.
+Correct Answer: A – The Monte Carlo method uses randomness to explore different possible outcomes, helping scientists predict how populations might change under varying conditions.
