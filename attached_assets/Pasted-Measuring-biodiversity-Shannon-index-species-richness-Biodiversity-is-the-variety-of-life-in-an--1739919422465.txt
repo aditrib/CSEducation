@@ -1,0 +1,20 @@
+Measuring biodiversity (Shannon index, species richness).
+Biodiversity is the variety of life in an ecosystem, and scientists measure it using tools like species richness (the total number of different species) and the Shannon Index (which accounts for both the number of species and how evenly they are distributed). High biodiversity helps ecosystems stay resilient, meaning they can recover from changes like climate shifts or species loss.
+Arrays, hash tables, trees.
+In programming, we use arrays to store lists of species, hash tables to quickly look up species populations, and trees to organize species based on traits like predators and habitats. These data structures help scientists efficiently store and analyze biodiversity data in large ecosystems.
+Keystone Species Click & Learn Demo
+In the Keystone Species Click & Learn demo, you’ll explore how certain species have a disproportionately large impact on their ecosystems, connecting to this section by showing how biodiversity measurements and data structures help scientists track species roles, predict ecosystem stability, and understand the importance of species richness.
+https://www.biointeractive.org/classroom-resources/exploring-keystone-species
+Check for Understanding
+Why is high biodiversity important for an ecosystem?
+A) It makes the ecosystem look more visually appealing.
+B) It helps the ecosystem recover from environmental changes, such as climate shifts or species loss.
+C) It ensures all species have equal population sizes.
+D) It prevents new species from entering the ecosystem.
+Correct Answer: B – High biodiversity increases ecosystem resilience, helping it recover from disturbances like climate change or species loss.
+Which data structure would be best for quickly looking up the population size of a specific species in an ecosystem?
+A) An array, because it stores species in a simple list.
+B) A tree, because it organizes species based on traits.
+C) A hash table, because it allows for fast lookups of species populations.
+D) A graph, because it represents species interactions.
+Correct Answer: C – A hash table allows for quick lookups, making it efficient for tracking species populations in biodiversity studies.
