@@ -26,25 +26,49 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
   };
 
   const handleSubmit = async () => {
-    let score = 0;
-    const questions = quiz.questions;
+    try {
+      if (answers.length !== quiz.questions.length) {
+        toast({
+          title: "Error",
+          description: "Please answer all questions before submitting.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    for (let i = 0; i < questions.length; i++) {
-      const question = questions[i];
-      const answer = answers[i];
-      if (answer === question.correctAnswer) score++;
+      let score = 0;
+      const questions = quiz.questions;
+
+      for (let i = 0; i < questions.length; i++) {
+        const question = questions[i];
+        const answer = answers[i];
+        if (typeof answer === 'number' && answer === question.correctAnswer) {
+          score++;
+        }
+      }
+
+      toast({
+        title: "Quiz submitted!",
+        description: `You got ${score} out of ${questions.length} questions correct!`,
+      });
+
+      setIsSubmitted(true);
+      onComplete();
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+      toast({
+        title: "Error",
+        description: "There was an error submitting your quiz. Please try again.",
+        variant: "destructive",
+      });
     }
-
-    toast({
-      title: "Quiz submitted!",
-      description: `You got ${score} out of ${questions.length} questions correct!`,
-    });
-
-    setIsSubmitted(true);
-    onComplete();
   };
 
   const question = quiz.questions[currentQuestion];
+
+  if (!question) {
+    return null;
+  }
 
   if (isSubmitted) {
     return (
@@ -68,7 +92,7 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
               transition={{ delay: 0.4 }}
               className="text-xl font-semibold mb-2"
             >
-              Quiz Submitted
+              Quiz Completed
             </motion.h3>
             <motion.p
               initial={{ opacity: 0 }}
@@ -144,6 +168,7 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
           {currentQuestion === quiz.questions.length - 1 ? (
             <Button
               onClick={handleSubmit}
+              disabled={answers.length !== quiz.questions.length}
               className="flex items-center gap-2"
             >
               Submit Quiz
