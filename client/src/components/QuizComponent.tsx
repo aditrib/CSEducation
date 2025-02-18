@@ -17,6 +17,7 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | string)[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const handleAnswer = (answer: number | string) => {
@@ -26,7 +27,11 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     try {
+      setIsSubmitting(true);
+
       if (answers.length !== quiz.questions.length) {
         toast({
           title: "Error",
@@ -47,13 +52,21 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
         }
       }
 
+      // First update the UI to show completion
+      setIsSubmitted(true);
+
       toast({
         title: "Quiz submitted!",
         description: `You got ${score} out of ${questions.length} questions correct!`,
       });
 
-      setIsSubmitted(true);
-      onComplete();
+      // Then try to update the progress
+      try {
+        await onComplete();
+      } catch (error) {
+        console.error('Error updating progress:', error);
+        // Don't show error to user since the quiz was completed successfully
+      }
     } catch (error) {
       console.error('Error submitting quiz:', error);
       toast({
@@ -61,6 +74,8 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
         description: "There was an error submitting your quiz. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -158,7 +173,7 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
           <Button
             variant="outline"
             onClick={() => setCurrentQuestion(prev => prev - 1)}
-            disabled={currentQuestion === 0}
+            disabled={currentQuestion === 0 || isSubmitting}
             className="flex items-center gap-2"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -168,16 +183,16 @@ export function QuizComponent({ quiz, onComplete }: QuizComponentProps) {
           {currentQuestion === quiz.questions.length - 1 ? (
             <Button
               onClick={handleSubmit}
-              disabled={answers.length !== quiz.questions.length}
+              disabled={answers.length !== quiz.questions.length || isSubmitting}
               className="flex items-center gap-2"
             >
-              Submit Quiz
+              {isSubmitting ? 'Submitting...' : 'Submit Quiz'}
               <Send className="h-4 w-4" />
             </Button>
           ) : (
             <Button
               onClick={() => setCurrentQuestion(prev => prev + 1)}
-              disabled={answers[currentQuestion] === undefined}
+              disabled={answers[currentQuestion] === undefined || isSubmitting}
               className="flex items-center gap-2"
             >
               Next
