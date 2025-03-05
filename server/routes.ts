@@ -1,7 +1,14 @@
 import type { Express } from "express";
 import { createServer } from "http";
 import { db } from "@db";
-import { courses, modules, content, quizzes, progress, users } from "@db/schema";
+import {
+  courses,
+  modules,
+  content,
+  quizzes,
+  progress,
+  users,
+} from "@db/schema";
 import { eq, sql } from "drizzle-orm";
 import { spawn } from "child_process";
 
@@ -43,7 +50,8 @@ export function registerRoutes(app: Express) {
     const { title, description } = req.body;
 
     try {
-      await db.update(modules)
+      await db
+        .update(modules)
         .set({ title, description })
         .where(eq(modules.id, moduleId));
 
@@ -55,7 +63,13 @@ export function registerRoutes(app: Express) {
 
   // Create new content (teacher only)
   app.post("/api/content", async (req, res) => {
-    const { title, type, content: contentBody, moduleId, sequenceOrder } = req.body;
+    const {
+      title,
+      type,
+      content: contentBody,
+      moduleId,
+      sequenceOrder,
+    } = req.body;
 
     try {
       const result = await db.insert(content).values({
@@ -78,7 +92,8 @@ export function registerRoutes(app: Express) {
     const { title, content: contentBody } = req.body;
 
     try {
-      await db.update(content)
+      await db
+        .update(content)
         .set({ title, content: contentBody })
         .where(eq(content.id, contentId));
 
@@ -147,18 +162,18 @@ export function registerRoutes(app: Express) {
         modules: {
           with: {
             progress: {
-              where: eq(progress.userId, userId)
-            }
-          }
-        }
-      }
+              where: eq(progress.userId, userId),
+            },
+          },
+        },
+      },
     });
 
     // Calculate completion percentage for each course
-    const courseProgress = courseStats.map(course => {
+    const courseProgress = courseStats.map((course) => {
       const totalModules = course.modules.length;
-      const completedModules = course.modules.filter(module =>
-        module.progress.some(p => p.completed)
+      const completedModules = course.modules.filter((module) =>
+        module.progress.some((p) => p.completed)
       ).length;
 
       return {
@@ -166,7 +181,8 @@ export function registerRoutes(app: Express) {
         title: course.title,
         completedModules,
         totalModules,
-        percentage: totalModules > 0 ? (completedModules / totalModules) * 100 : 0
+        percentage:
+          totalModules > 0 ? (completedModules / totalModules) * 100 : 0,
       };
     });
 
@@ -178,21 +194,21 @@ export function registerRoutes(app: Express) {
       with: {
         module: {
           with: {
-            course: true
-          }
-        }
-      }
+            course: true,
+          },
+        },
+      },
     });
 
     res.json({
       courseProgress,
-      recentActivity: recentActivity.map(activity => ({
+      recentActivity: recentActivity.map((activity) => ({
         moduleId: activity.moduleId,
         moduleName: activity.module.title,
         courseName: activity.module.course.title,
         completed: activity.completed,
-        lastAccessed: activity.lastAccessed
-      }))
+        lastAccessed: activity.lastAccessed,
+      })),
     });
   });
 
@@ -204,32 +220,34 @@ export function registerRoutes(app: Express) {
       if (testCases && testCases.length > 0) {
         // Run code for each test case
         const results = await Promise.all(
-          testCases.map(async (test: { input: string; expectedOutput: string }) => {
-            return new Promise((resolve) => {
-              const process = spawn("python3", ["-c", code]);
-              let output = "";
+          testCases.map(
+            async (test: { input: string; expectedOutput: string }) => {
+              return new Promise((resolve) => {
+                const process = spawn("python3", ["-c", code]);
+                let output = "";
 
-              process.stdout.on("data", (data) => {
-                output += data.toString();
+                process.stdout.on("data", (data) => {
+                  output += data.toString();
+                });
+
+                if (test.input) {
+                  process.stdin.write(test.input + "\n");
+                  process.stdin.end();
+                }
+
+                process.on("close", () => {
+                  output = output.trim();
+                  resolve(output === test.expectedOutput.trim());
+                });
+
+                // Set timeout for code execution
+                setTimeout(() => {
+                  process.kill();
+                  resolve(false);
+                }, 6000);
               });
-
-              if (test.input) {
-                process.stdin.write(test.input + "\n");
-                process.stdin.end();
-              }
-
-              process.on("close", () => {
-                output = output.trim();
-                resolve(output === test.expectedOutput.trim());
-              });
-
-              // Set timeout for code execution
-              setTimeout(() => {
-                process.kill();
-                resolve(false);
-              }, 5000);
-            });
-          })
+            }
+          )
         );
 
         // All test cases must pass
@@ -255,17 +273,17 @@ export function registerRoutes(app: Express) {
         // Set timeout
         setTimeout(() => {
           process.kill();
-          res.json({ 
-            output: "Execution timed out after 5 seconds", 
-            success: false 
+          res.json({
+            output: "Execution timed out after 5 seconds",
+            success: false,
           });
-        }, 5000);
+        }, 6000);
       }
     } catch (error) {
-      res.status(500).json({ 
-        success: false, 
+      res.status(500).json({
+        success: false,
         error: "Code execution failed",
-        output: error instanceof Error ? error.message : "Unknown error"
+        output: error instanceof Error ? error.message : "Unknown error",
       });
     }
   });
